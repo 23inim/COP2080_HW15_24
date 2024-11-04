@@ -59,10 +59,8 @@ def fetch_links():
         sb(str(err))
     else:
         soup = BeautifulSoup(page.content, 'html.parser')
-
     for link in soup.findAll('a'):
         current_link = link.get('href')
-        print(_url.get())
         if current_link.startswith('http') and not _url.get() in current_link:
             links.append(link.get('href'))
     _images.set(tuple(link for link in links))
@@ -155,7 +153,7 @@ if __name__ == "__main__": # execute logic if run directly
     # Set _img_frame as parent of Listbox and _images is variable tied to
     _images = StringVar()
     _img_listbox = Listbox(
-        _img_frame, listvariable=_images, height=6, width=25)
+        _img_frame, listvariable=_images, height=6, width=50)
     _img_listbox.grid(row=0, column=0, sticky=(E, W), pady=5)
     #Scrollbar can move vertical
     _scrollbar = ttk.Scrollbar(
