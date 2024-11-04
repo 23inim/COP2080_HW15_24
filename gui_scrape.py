@@ -29,7 +29,6 @@ def fetch_url():
             sb('No images found')
         config['images'] = images
 
-
 def fetch_images(soup, base_url):
     images = []
     for img in soup.findAll('img'):
@@ -39,6 +38,34 @@ def fetch_images(soup, base_url):
         images.append(dict(name=name, url=img_url))
     return images
 
+def fetch_title():
+    url = _url.get()
+    try:
+        page = requests.get(url)
+    except requests.RequestException as err:
+        sb(str(err))
+    else:
+        soup = BeautifulSoup(page.content, 'html.parser')
+    title = soup.find('title')
+    sb('Title found: {}'.format(title.text))
+
+def fetch_links():
+    links = []
+    url = _url.get()
+    _images.set(())
+    try:
+        page = requests.get(url)
+    except requests.RequestException as err:
+        sb(str(err))
+    else:
+        soup = BeautifulSoup(page.content, 'html.parser')
+
+    for link in soup.findAll('a'):
+        current_link = link.get('href')
+        print(_url.get())
+        if current_link.startswith('http') and not _url.get() in current_link:
+            links.append(link.get('href'))
+    _images.set(tuple(link for link in links))
 
 def save():
     if not config.get('images'):
@@ -106,9 +133,19 @@ if __name__ == "__main__": # execute logic if run directly
     _url_entry.grid(row=0, column=0, sticky=(E, W, S, N), padx=5)
     # grid mgr places object at position
     _fetch_btn = ttk.Button(
-        _url_frame, text='Fetch info', command=fetch_url) # create button
+        _url_frame, text='Fetch img', command=fetch_url) # create button
     # fetch_url() is callback for button press
     _fetch_btn.grid(row=0, column=1, sticky=W, padx=5)
+
+    _fetch_title = ttk.Button(
+        _url_frame, text='Fetch title', command=fetch_title)  # create button
+    # fetch_url() is callback for button press
+    _fetch_title.grid(row=1, column=1, sticky=W, padx=5)
+
+    _fetch_link = ttk.Button(
+        _url_frame, text='Fetch link', command=fetch_links)  # create button
+    # fetch_url() is callback for button press
+    _fetch_link.grid(row=2, column=1, sticky=W, padx=5)
 
     # img_frame contains Lisbox and Radio Frame
     _img_frame = ttk.LabelFrame(
